@@ -1,0 +1,142 @@
+<!--
+  ~ Copyright 2004-2013 ICEsoft Technologies Canada Corp.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the
+  ~ License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an "AS
+  ~ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied. See the License for the specific language
+  ~ governing permissions and limitations under the License.
+  -->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../../main/javascript/header.js"></script>
+    <script type="text/javascript" src="../../main/javascript/module.js"></script>
+    <script type="text/javascript" src="../../main/javascript/oo.js"></script>
+    <script type="text/javascript" src="../../main/javascript/functional.js"></script>
+    <script type="text/javascript" src="../../main/javascript/collection.js"></script>
+    <script type="text/javascript" src="unittest.js"></script>
+    <script type="text/javascript">
+        eval(ice.importFrom('ice.lib.oo'));
+        eval(ice.importFrom('ice.lib.functional'));
+        eval(ice.importFrom('ice.lib.collection'));
+
+        function Range(start, end) {
+            return Stream(function(cellConstructor) {
+                if (start == end) return null;
+                function range(index) {
+                    if (index > end) return null;
+                    return function() {
+                        return cellConstructor(index, range(index + 1));
+                    };
+                }
+
+                return range(start);
+            });
+        }
+
+        window.onload = InPageRunner('Collection test suite', function(test) {
+            test('detect arrays', function() {
+                checkTrue(isArray([]), 'array is not detected');
+                checkFalse(isArray(''), 'array is detected falsely');
+                checkFalse(isArray(new Object), 'array is detected falsely');
+            });
+
+            test('detect strings', function() {
+                checkTrue(isString(''), 'string is not detected');
+                checkFalse(isString([]), 'string is detected falsely');
+                checkFalse(isString(new Object), 'string is detected falsely');
+            });
+
+            test('indexed access', function() {
+                checkEqual(indexOf([1, 2, 3], 1), 0);
+                checkEqual(indexOf([1, 2, 3], 2), 1);
+                checkEqual(indexOf(['a', 'b', 'c'], 'c'), 2);
+                checkEqual(indexOf(['a', 'b', 'c'], 'd'), -1);
+                checkEqual(indexOf('abc', 'a'), 0);
+                checkEqual(indexOf('abc', 'b'), 1);
+                checkEqual(indexOf('abc', 'c'), 2);
+                checkEqual(indexOf('abc', 'd'), -1);
+                checkException(function() {
+                    indexOf(new Object, 'toString');
+                });
+            });
+
+            test('querying', function() {
+                checkEqual(size([1, 2, 3]), 3);
+                checkEqual(size('abcd'), 4);
+                checkEqual(size(Range(0, 3)), 4);
+
+                checkFalse(isEmpty([1, 2, 3]));
+                checkFalse(isEmpty('aaa'));
+                checkFalse(isEmpty(Range(0, 3)));
+
+                checkTrue(isEmpty([]));
+                checkTrue(isEmpty(''));
+                checkTrue(isEmpty(Range(0, 0)));
+            });
+
+            test('modify arrays', function() {
+                checkEqual(concatenate([1, 2, 3], [3]).length, 4);
+                checkEqual(concatenate([1, 2, 3], [4])[3], 4);
+                var a = [1];
+                checkNotEqual(concatenate(a, [1]), a);
+
+                checkEqual(insert([1], 2).length, 2);
+                checkEqual(insert([1], 2)[0], 2);
+                var aa = [1];
+                checkEqual(insert(aa, 3), aa);
+
+                checkEqual(append([1], 2).length, 2);
+                checkEqual(append([1], 2)[1], 2);
+                var aaa = [1];
+                checkEqual(append(aaa, 3), aaa);
+            });
+
+            test('iterate', function() {
+                var a = ['a', 1, 4, 'b'];
+                var index = 0;
+                each(a, function(i) {
+                    checkEqual(i, a[index++]);
+                });
+
+                var aa = 'testing iteration over strings';
+                var index = 0;
+                each(aa, function(i) {
+                    checkEqual(i, aa[index++]);
+                });
+
+                var aaa = Range(0, 500);
+                var index = 0;
+                each(aaa, function(i) {
+                    checkEqual(i, index++);
+                });
+            });
+
+            test('collect', function() {
+                var index = 1;
+                each(collect([0, 1, 2], increment), function(i) {
+                    checkEqual(index++, i);
+                });
+
+                checkEqual('ABCDEF', collect('abcdef', function(i) {
+                    return i.toUpperCase();
+                }));
+
+                var index = -99;
+                each(collect(Range(-100, 100), increment), function(i) {
+                    checkEqual(index++, i);
+                });
+            });
+        });
+    </script>
+</head>
+<body/>
+</html>

@@ -1,0 +1,98 @@
+<!--
+  ~ Copyright 2004-2013 ICEsoft Technologies Canada Corp.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the
+  ~ License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an "AS
+  ~ IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied. See the License for the specific language
+  ~ governing permissions and limitations under the License.
+  -->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="../../main/javascript/header.js"></script>
+    <script type="text/javascript" src="../../main/javascript/module.js"></script>
+    <script type="text/javascript" src="../../main/javascript/oo.js"></script>
+    <script type="text/javascript" src="../../main/javascript/functional.js"></script>
+    <script type="text/javascript" src="../../main/javascript/collection.js"></script>
+    <script type="text/javascript" src="../../main/javascript/hashtable.js"></script>
+    <script type="text/javascript" src="unittest.js"></script>
+    <script type="text/javascript">
+        eval(ice.importFrom('ice.lib.collection'));
+        eval(ice.importFrom('ice.lib.hashtable'));
+
+        window.onload = InPageRunner('Hashtable test suite', function(test) {
+            test('check put/lookup', function() {
+                var table = HashTable();
+
+                putAt(table, 'a', 1);
+                putAt(table, 'b', 2);
+                putAt(table, 'c', 3);
+
+                checkEqual(at(table, 'a'), 1);
+                checkEqual(at(table, 'b'), 2);
+                checkEqual(at(table, 'c'), 3);
+
+                putAt(table, 'b', null);
+                checkFalse(at(table, 'b'));
+            });
+
+            test('check iteration', function() {
+                var table = HashTable();
+
+                putAt(table, 'a', 1);
+                putAt(table, 'b', 2);
+                putAt(table, 'c', 3);
+
+                var keys = ['a', 'b', 'c'];
+                var values = [1, 2, 3];
+                var index = 0;
+
+                each(table, function(k, v) {
+                    checkEqual(k, keys[index]);
+                    checkEqual(v, values[index]);
+                    ++index;
+                });
+            });
+
+            test('check remove', function() {
+                var table = HashTable();
+
+                putAt(table, 'a', 1);
+                putAt(table, 'b', 2);
+
+                removeAt(table, 'a');
+                removeAt(table, 'b');
+
+                checkFalse(at(table, 'a'));
+                checkFalse(at(table, 'b'));
+            });
+
+            test('check access efficiency', function() {
+                var table = new HashTable();
+                for (var i = 0; i < 10000; i++) putAt(table, i, i);
+                for (var i = 0; i < 10000; i++) checkEqual(at(table, i), i, "index " + i + " failed to match");
+            });
+
+            test('check set complement', function() {
+                var setA = new HashSet();
+                for (var i = 0; i < 10000; i++) append(setA, i);
+                var setB = new HashSet();
+                for (var i = 5000; i < 15000; i++) append(setB, i);
+
+                complement(setA, setB);
+            });
+        });
+    </script>
+</head>
+<body/>
+</html>
