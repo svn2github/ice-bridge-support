@@ -41,9 +41,9 @@
                 <file name="cookie.js"/>
                 <file name="http.js"/>
                 <file name="hashtable.js"/>
-                <file name="logger.js"/>
                 <file name="element.js"/>
                 <file name="event.js"/>
+                <file name="logger.js"/>
             </filelist>
         </concat>
     </target>
