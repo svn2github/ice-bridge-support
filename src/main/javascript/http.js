@@ -272,7 +272,22 @@ ice.lib.http = ice.module(function(exportAs) {
             });
 
             method(contentAsDOM, function(self) {
-                return nativeRequestResponse.responseXML;
+                try {
+                    return nativeRequestResponse.responseXML;
+                } catch (e) {
+                    var txt = '<error>' + e + '</error>';
+                    var doc;
+                    if (window.DOMParser) {
+                        var parser = new DOMParser();
+                        doc = parser.parseFromString(txt,"text/xml");
+                    } else {
+                        doc = new ActiveXObject("Microsoft.XMLDOM");
+                        doc.async = false;
+                        doc.loadXML(txt);
+                    }
+
+                    return doc;
+                }
             });
 
             method(asString, function(self) {
