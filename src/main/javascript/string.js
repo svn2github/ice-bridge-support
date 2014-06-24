@@ -38,7 +38,8 @@ ice.lib.string = ice.module(function(exportAs) {
     }
 
     function endsWith(s, pattern) {
-        return s.lastIndexOf(pattern) == s.length - pattern.length;
+        var position = s.lastIndexOf(pattern);
+        return position > -1 && (position == s.length - pattern.length);
     }
 
     function containsSubstring(s, substring) {
