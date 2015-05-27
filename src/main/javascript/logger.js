@@ -168,24 +168,27 @@ ice.lib.logger = ice.module(function(exportAs) {
         }
 
         function displayEntry(priorityName, colorName, category, message, exception) {
-            var categoryName = join(category, '.');
+            //decouple document manipulation to avoid Internet Explorer COM related errors
+            setTimeout(function() {
+                var categoryName = join(category, '.');
 
-            if (categoryMatcher.test(categoryName)) {
-                var elementDocument = logContainer.ownerDocument;
-                var timestamp = new Date();
-                var completeMessage = join(['[', categoryName, '] : ', message, (exception ? join(['\n', exception.name, ' <', exception.message, '>'], '') : '')], '');
-                each(split(completeMessage, '\n'), function(line) {
-                    if (/(\w+)/.test(line)) {
-                        var eventNode = elementDocument.createElement('div');
-                        eventNode.style.padding = '3px';
-                        eventNode.style.color = colorName;
-                        eventNode.setAttribute("title", timestamp + ' | ' + priorityName)
-                        logContainer.appendChild(eventNode).appendChild(elementDocument.createTextNode(line));
-                    }
-                });
-                logContainer.scrollTop = logContainer.scrollHeight;
-            }
-            trimLines();
+                if (categoryMatcher.test(categoryName)) {
+                    var elementDocument = logContainer.ownerDocument;
+                    var timestamp = new Date();
+                    var completeMessage = join(['[', categoryName, '] : ', message, (exception ? join(['\n', exception.name, ' <', exception.message, '>'], '') : '')], '');
+                    each(split(completeMessage, '\n'), function(line) {
+                        if (/(\w+)/.test(line)) {
+                            var eventNode = elementDocument.createElement('div');
+                            eventNode.style.padding = '3px';
+                            eventNode.style.color = colorName;
+                            eventNode.setAttribute("title", timestamp + ' | ' + priorityName)
+                            logContainer.appendChild(eventNode).appendChild(elementDocument.createTextNode(line));
+                        }
+                    });
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                }
+                trimLines();
+            }, 1);
         }
 
         function showWindow() {
