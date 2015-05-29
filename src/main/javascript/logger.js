@@ -20,6 +20,7 @@ ice.lib.logger = ice.module(function(exportAs) {
     eval(ice.importFrom('ice.lib.collection'));
     eval(ice.importFrom('ice.lib.window'));
     eval(ice.importFrom('ice.lib.event'));
+    eval(ice.importFrom('ice.lib.string'));
 
     var debug = operator();
     var info = operator();
