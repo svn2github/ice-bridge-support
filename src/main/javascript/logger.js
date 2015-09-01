@@ -81,7 +81,7 @@ ice.lib.logger = ice.module(function(exportAs) {
             });
 
             method(log, function(self, operation, category, message, exception) {
-                if (localStorage['ice.localStorageLogHandler.enabled']) {
+                if (window.localStorage && window.localStorage['ice.localStorageLogHandler.enabled']) {
                     var formattedMessage = formatOutput(category, message);
                     var priorityName;
                     switch (operation) {
