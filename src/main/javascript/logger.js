@@ -57,6 +57,15 @@ ice.lib.logger = ice.module(function(exportAs) {
     }
 
     function LocalStorageLogHandler(handler) {
+
+        var enabled = false;
+
+        window.addEventListener('storage', function(e) {
+            if (e.key == 'ice.localStorageLogHandler.enabled') {
+                enabled = e.newValue == 'yes';
+            }
+        }, false);
+
         function storeLogMessage(level, message, exception) {
             var previousMessages = localStorage['ice.localStorageLogHandler.store'] || '';
 
@@ -81,7 +90,7 @@ ice.lib.logger = ice.module(function(exportAs) {
             });
 
             method(log, function(self, operation, category, message, exception) {
-                if (window.localStorage && window.localStorage['ice.localStorageLogHandler.enabled']) {
+                if (window.localStorage && window.localStorage['ice.localStorageLogHandler.enabled'] || enabled) {
                     var formattedMessage = formatOutput(category, message);
                     var priorityName;
                     switch (operation) {
