@@ -60,11 +60,13 @@ ice.lib.logger = ice.module(function(exportAs) {
 
         var enabled = false;
 
-        window.addEventListener('storage', function(e) {
-            if (e.key == 'ice.localStorageLogHandler.enabled') {
-                enabled = e.newValue == 'yes';
-            }
-        }, false);
+        if (window.addEventListener) {
+            window.addEventListener('storage', function (e) {
+                if (e.key == 'ice.localStorageLogHandler.enabled') {
+                    enabled = e.newValue == 'yes';
+                }
+            }, false);
+        }
 
         function storeLogMessage(level, message, exception) {
             var previousMessages = localStorage['ice.localStorageLogHandler.store'] || '';
