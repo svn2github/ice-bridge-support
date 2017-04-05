@@ -107,6 +107,7 @@ ice.lib.http = ice.module(function(exportAs) {
     var getAsynchronously = operator();
     var postSynchronously = operator();
     var postAsynchronously = operator();
+    var deleteAsynchronously = operator();
     var Client = exportAs('Client', function(autoclose) {
         var newNativeRequest;
         if (window.XMLHttpRequest) {
@@ -169,7 +170,9 @@ ice.lib.http = ice.module(function(exportAs) {
                         autoClose(request);
                     }
                 };
-                nativeRequestResponse.send(asURIEncodedString(withNewQuery(setupQuery)));
+
+                var requestBody = typeof setupQuery == 'function' ? withNewQuery(setupQuery) : setupQuery;
+                nativeRequestResponse.send(requestBody);
                 return request;
             });
 
@@ -179,9 +182,26 @@ ice.lib.http = ice.module(function(exportAs) {
                 var response = ResponseProxy(nativeRequestResponse);
                 nativeRequestResponse.open('POST', uri, false);
                 setupRequest(request);
-                nativeRequestResponse.send(asURIEncodedString(withNewQuery(setupQuery)));
+                var requestBody = typeof setupQuery == 'function' ? withNewQuery(setupQuery) : setupQuery;
+                nativeRequestResponse.send(requestBody);
                 onResponse(response, request);
                 autoClose(request);
+            });
+
+            method(deleteAsynchronously, function(self, uri, setupQuery, setupRequest, onResponse) {
+                var nativeRequestResponse = newNativeRequest();
+                var request = RequestProxy(nativeRequestResponse);
+                var response = ResponseProxy(nativeRequestResponse);
+                nativeRequestResponse.open('DELETE', appendToURI(withNewQuery(setupQuery), uri), true);
+                setupRequest(request);
+                nativeRequestResponse.onreadystatechange = function() {
+                    if (nativeRequestResponse.readyState == 4) {
+                        onResponse(response, request);
+                        autoClose(request);
+                    }
+                };
+                nativeRequestResponse.send('');
+                return request;
             });
         });
     });
@@ -319,6 +339,7 @@ ice.lib.http = ice.module(function(exportAs) {
     exportAs('getAsynchronously', getAsynchronously);
     exportAs('postSynchronously', postSynchronously);
     exportAs('postAsynchronously', postAsynchronously);
+    exportAs('deleteAsynchronously', deleteAsynchronously);
     exportAs('close', close);
     exportAs('abort', abort);
     exportAs('setHeader', setHeader);
